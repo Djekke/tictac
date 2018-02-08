@@ -238,7 +238,7 @@ function canvasOnMouseMove (evt) {
 }
 
 function canvasOnMouseDown (evt) {
-  if (clicked) {
+  if ((evt.button !== 0) || clicked) {
     clicked = false;
     drag = false;
   } else if (drag) {
