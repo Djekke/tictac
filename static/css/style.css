@@ -1,32 +1,115 @@
 html, body {
-    margin: 0;
-    height: 100%;
+  margin: 0;
+  height: 100%;
 }
-#menu{
-    background: white;
-    width: 15%;
-    float: left;
-    height: 100%;
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+.overlay {
+  height: 100%;
+  width: 100%;
+  display: block;
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  background-color: white;
+  overflow: auto;
 }
-#game{
-    background: blue;
-    position: relative;
-    height: 100%;
-    width: 85%;
-    float: left;
-    overflow: hidden;
+.overlay-content {
+  position: relative;
+  top: 10%;
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
 }
-#gamefield{
-    background-color:  #fdf6e3;
-    width: 100%;
-    height: 100%;
+.overlay-form {
+  margin: auto;
+  padding: 16px;
+  width: 25%;
+  min-width: 150px;
+  text-align: center;
 }
-button{
-    width: 80%;
-    border-radius: 5px;
-    margin-top: 5px;
+.overlay-form button {
+  border: 0;
+  background-color: #4CAF50;
+  color: white;
+  padding: 5px 5px;
+  margin: 5px 2px 5px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+.overlay-form input {
+  text-align: center;
+  width: 100%;
+  padding: 5px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+#menu {
+  background: white;
+  width: 15%;
+  float: left;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+#game {
+  position: relative;
+  height: 100%;
+  width: 85%;
+  float: left;
+  overflow: hidden;
+}
+#waiting {
+  background: white;
+  height: 100%;
+  width: 85%;
+  display: block;
+  position: absolute;
+  top: 0;
+  margin-left: 15%;
+  z-index: 1;
+}
+.container {
+  width: 85%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  align-content: center;
+}
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+  margin-left: auto;
+  margin-right: auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.load-text {
+  padding-top: 15px;
+  text-align: center;
+  font: 12pt "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+#gamefield {
+  background-color:  #fdf6e3;
+  width: 100%;
+  height: 100%;
+}
+.menu-btn {
+  width: 80%;
+  border-radius: 5px;
+  margin-top: 5px;
 }

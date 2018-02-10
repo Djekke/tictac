@@ -13,25 +13,46 @@
   </script>
 </head>
 <body onresize="resizeCanvas(event)">
-  <div id='menu'>
-    <h2 id='foo'>〈( ^.^)ノ</h2>
-    <div style='padding: 10px;'>
-        <input id='username' style='width: 70%;' value="{{ user }}">
-        <button id='setUsername' style='width: 10%;'>+</button>
+  <div id='startscreen' class='overlay'>
+    <div class='overlay-content'>
+      <h1>Welocme to infinite Tic-Tac-Toe game</h1>
+      <h2 id='foo'>〈( ^.^)ノ</h2>
+      <div class='overlay-form'>
+        <label for='username'><b>Choose you name:</b></label>
+        <input id='username' placeholder='username' value="{{ user }}" autofocus>
+        <button id='newGame'>Start new game</button>
+        <label for='joinID'><b>Join exist game:</b></label>
+        <input id='joinID' placeholder='game ID'>
+        <button id='joinGame'>Join</button>
+      </div>
     </div>
-    <div id='userlist'>
+  </div>
+  <div id='menu'>
+    <div id='settings' class='menu-tab'>
+      <div id='userlist'>
         <div id='user1' style='text-align: center;'></div>
         <div id='user2' style='text-align: center;'></div>
+      </div>
+      <input id='gameID' style='display:none'>
+      <button id='copyID' class='menu-btn'>Copy game ID</button>
+      <button id='clear' class='menu-btn'>clear</button>
+      <button id='refresh' class='menu-btn'>refresh</button>
+      <button id='bex' class='menu-btn'>be-x</button>
+      <button id='beo' class='menu-btn'>be-o</button>
+      <button id='resetScale' class='menu-btn'>reset pos</button>
+      Zoom: <span id="zoomLevel">1</span>
     </div>
-    <button id='clear'>clear</button>
-    <button id='refresh'>refresh</button>
-    <button id='bex'>be-x</button>
-    <button id='beo'>be-o</button>
-    <button id='resetScale'>reset pos</button>
-    Zoom: <span id="zoomLevel">1</span>
   </div>
   <div id='game'>
     <canvas id='gamefield'></canvas>
+  </div>
+  <div id='waiting'>
+    <div class='container'>
+      <div class="loader"></div>
+      <div class="load-text">
+        Waiting second player
+      </div>
+    </div>
   </div>
 </body>
 </html>

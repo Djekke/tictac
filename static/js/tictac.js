@@ -43,6 +43,7 @@ var dragStep = 50;
 var players = [0, 0];
 var moves = [];
 var originalMousePosition;
+var gameID;
 
 var scale = {
   length: function (number) {
@@ -68,47 +69,86 @@ function getMouseOffset (event) {
   return offset;
 }
 
+function newGame () {
+  var uName = document.getElementById('username').value;
+  if (uName !== '') {
+    setUser(uName);
+  }
+  $.getJSON($SCRIPT_ROOT + '/_new_game', {},
+    function (data) {
+      gameID = data.gameID;
+    }
+  );
+  document.getElementById('startscreen').style.display = 'none';
+  //// placeholder for gameboard, waiting other player (make singleplayer after)
+  //
+  //// waiting loop
+  //
+}
+
+function joinGame () {
+  var id = document.getElementById('joinID').value;
+  if (id !== '') {
+    $.getJSON($SCRIPT_ROOT + '/_new_game', {id: id},
+      function (data) {
+        if (data.found) {
+          gameID = id;
+          var uName = document.getElementById('username').value;
+          if (uName !== '') {
+            setUser(uName);
+          }
+          document.getElementById('startscreen').style.display = 'none';
+          document.getElementById('waiting').style.display = 'none';
+        } else {
+          console.log('Game not found', id);
+          window.alert('Wrong game id');
+        }
+      }
+    );
+  }
+}
+
+function copyID () {
+  var inputID = document.getElementById('gameID');
+  inputID.value = gameID;
+  inputID.style.display = 'flex';
+  inputID.select();  
+  document.execCommand('copy');
+  inputID.style.display = 'none';
+}
+
 function update (mn = moves.length) {
   $.getJSON($SCRIPT_ROOT + '/_update', {move_number: mn},
     function (data) {
-      if (data.move_number === moves.length) { // we have all moves
-        if (data.moves.length > 0) {
-          if (data.moves.length === moves.length) {
-            console.log('Syncing ...');
-            syncMoves(data.moves);
-          } else {
-            console.log('Error, data not full', data, moves);
-          }
+      if (gameID === data.gameID) {
+        updateMoves(data.range, data.moves);
+        if (data.players[0] !== players[0] || data.players[1] !== players[1]) {
+          console.log(players);
+          updatePlayers(data.players);
         }
-      } else if (data.move_number === (moves.length + data.moves.length)) {
-        for (var i = 0; i < data.moves.length; i++) {
-          fillSquare(data.moves[i][0], data.moves[i][1],
-                     colors[data.moves[i][2]]);
-        }
-        moves = moves.concat(data.moves);
-        updateTurn(data.moves[data.moves.length - 1][2]);
       } else {
-        console.log('Error, too much data', data, moves);
-      }
-      if (data.players[0] !== players[0] ||
-          data.players[1] !== players[1]) {
-        console.log(players);
-        updatePlayers(data.players);
+        console.log('Not my data', data.gameID, gameID);
       }
     }
   );
   return false;
 }
 
-function syncMoves (newMoves) {
+function updateMoves (range, sMoves) {
   var sync = true;
-  for (var i = 0; i < moves.length; i++) {
-    for (var j = 0; j < moves[i].length; j++) {
-      if (moves[i][j] !== newMoves[i][j]) {
-        console.log('out of sync:', i, moves[i], newMoves[i]);
-        moves[i][j] = newMoves[i][j];
+  for (var i = range[0]; i < range[1]; i++) {
+    if (i < moves.length) { //already have this move, check it
+      if ((moves[i][0] !== sMoves[i - range[0]][0]) ||
+          (moves[i][1] !== sMoves[i - range[0]][1]) ||
+          (moves[i][2] !== sMoves[i - range[0]][2])) {
+        console.log('out of sync:', i, moves[i], sMoves[i - range[0]]);
+        moves[i] = sMoves[i - range[0]];
         sync = false;
       }
+    } else {
+      fillSquare(sMoves[i - range[0]][0], sMoves[i - range[0]][1],
+                 colors[sMoves[i - range[0]][2]]);
+      moves.push(sMoves[i - range[0]]);
     }
   }
   if (!sync) {
@@ -141,7 +181,7 @@ function ping () { // never used
 
 function clear () {
   $.getJSON($SCRIPT_ROOT + '/_clear', {},
-    function (date) {
+    function (data) {
       moves = [];
       drawGrid();
     }
@@ -158,9 +198,14 @@ function setUser (value) {
   );
 }
 
-function setUsername (value) {
-  var username = $('#username').val();
-  $.getJSON($SCRIPT_ROOT + '/_set_username', {username: username});
+function setUsername (username) {
+  $.getJSON($SCRIPT_ROOT + '/_set_username', {username: username}, 
+    function (data) {
+      if (data.username === username) {
+        console.log('Username set', username);
+      }
+    }
+  );
 }
 
 function drawGrid () {
@@ -337,13 +382,16 @@ function loop () {
 window.addEventListener('onresize', resizeCanvas, false);
 
 $(function tictac () {
-  InitCanvas();
+  if (gameID != null) {
+    InitCanvas();
+  }
 });
 
-// clear game board by clicling the button
+$('#newGame').click(newGame);
+$('#joinGame').click(joinGame);
+$('#copyID').click(copyID);
 $('#clear').click(clear);
 $('#refresh').click(function () { update(0) });
-$('#setUsername').click(function () { setUsername() });
 $('#bex').click(function () { setUser('0') });
 $('#beo').click(function () { setUser('1') });
 $('#resetScale').click(resetScale);

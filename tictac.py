@@ -3,7 +3,7 @@ from flask import Flask, session, request, render_template, jsonify
 from data import Gameboard
 app = Flask(__name__)
 
-g = Gameboard()
+g = {}
 users = {}
 
 def get_user():
@@ -51,8 +51,8 @@ def update():
         return None
     move_number = request.args.get('move_number', type=int)
     players = [users.get(key) for key in g.players]
-    return jsonify(moves=g.moves[move_number:], move_number=len(g.moves),
-                   players=players, game_id=g.id)
+    return jsonify(gameID=g.id, players=players, moves=g.moves[move_number:],
+                    range=[move_number,len(g.moves)])
 
 @app.route('/_set_user')
 def set_user():
@@ -84,5 +84,19 @@ def move():
                        value=result['value'])
     except:
         return jsonify(count=0)
+
+@app.route('/_new_game')
+def new_game():
+    new_board = Gameboard()
+    g[new_board.id] = new_board
+    return jsonify(gameID=new_board.id)
+
+@app.route('/_join_game')
+def join_game():
+    id = request.args.get('id', type=str)
+    if g.get(id) == None:
+        return jsonify(found=false)
+    else
+        return jsonify(found=true)
 
 app.secret_key='notthatseecreteh?'
